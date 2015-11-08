@@ -8,27 +8,61 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
     android:background="@color/silver">
-
-    <TextView
-        android:text="hello"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt1" />
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:id="@+id/controls">
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
+        android:text="Load"
         android:id="@+id/getdata"
-        android:layout_toRightOf="@+id/txt1"
+        android:layout_weight="1"
         android:layout_alignParentTop="false" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="prev"
+        android:layout_weight="1"
+        android:layout_toRightOf="@+id/getdata"
+        android:id="@+id/prev"
+        android:src="@drawable/ic_skip_previous_white_24dp"/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="P/P"
+        android:layout_weight="1"
+        android:layout_toRightOf="@+id/prev"
+        android:id="@+id/play"
+        android:src="@drawable/ic_play_arrow_white_24dp"/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="nxt"
+        android:layout_weight="1"
+        android:layout_toRightOf="@+id/play"
+        android:id="@+id/paus"
+        android:src="@drawable/ic_pause_white_24dp"/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="nxt"
+        android:layout_weight="1"
+        android:layout_toRightOf="@+id/paus"
+        android:id="@+id/next"
+        android:src="@drawable/ic_skip_next_white_24dp"/>
+
+
+</LinearLayout>
 
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/getdata"
-        android:divider="@null" />
+        android:layout_below="@+id/controls"
+        android:divider="@null"
+        android:dividerHeight="-5dip"/>
 
 
 </RelativeLayout>

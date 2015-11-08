@@ -3,7 +3,7 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardElevation="1dip">
+    card_view:cardElevation="0dip">
 
     <RelativeLayout
         android:layout_width="match_parent"

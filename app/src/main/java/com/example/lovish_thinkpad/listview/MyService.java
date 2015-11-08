@@ -3,6 +3,7 @@ package com.example.lovish_thinkpad.listview;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
@@ -12,12 +13,15 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener {
 
+    IBinder mbinder = new LocalBinder();
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private String sntAudioLink;
 
     private static final int NOTIFICATION_ID = 1;
 
-    public void onCreate() {
+    public void onCreate()
+    {
+
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setOnPreparedListener(this);
@@ -43,7 +47,7 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
         } catch (IOException e) {
 
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     public void onDestroy() {
@@ -60,7 +64,12 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return mbinder;
+    }
+    public class LocalBinder extends Binder {
+        MyService getService() {
+            return MyService.this;
+        }
     }
 
     @Override
@@ -115,7 +124,7 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
         }
     }
 
-    public void stopMedia() {
+    public  void stopMedia() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
