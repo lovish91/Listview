@@ -3,11 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
     android:background="@color/silver">
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:umanoDragView="@+id/dragView"
+        sothree:umanoOverlay="true"
+        sothree:umanoPanelHeight="65dp"
+        sothree:umanoParalaxOffset="0dp"
+        sothree:umanoShadowHeight="4dp">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -35,15 +50,8 @@
         android:layout_weight="1"
         android:layout_toRightOf="@+id/prev"
         android:id="@+id/play"
-        android:src="@drawable/ic_play_arrow_white_24dp"/>
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="nxt"
-        android:layout_weight="1"
-        android:layout_toRightOf="@+id/play"
-        android:id="@+id/paus"
-        android:src="@drawable/ic_pause_white_24dp"/>
+        android:src="@drawable/ic_equalizer_white_24dp"/>
+
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,5 +72,60 @@
         android:divider="@null"
         android:dividerHeight="-5dip"/>
 
+</RelativeLayout>
+        <!-- SLIDING LAYOUT -->
+        <LinearLayout
+            android:id="@+id/dragView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
+            android:clickable="true"
+            android:focusable="false"
+            android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/colorPrimaryDark">
+                <ImageView
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:id="@+id/small_dp"/>
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text="HELLO"
+                    android:textSize="14sp" />
+
+                <ImageButton
+                    android:id="@+id/btn_hide"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:gravity="right"
+                    android:paddingRight="5dp"
+                    android:background="@drawable/ic_play_arrow_white_36dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="0dp"
+                    android:id="@+id/bgdp"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
 </RelativeLayout>

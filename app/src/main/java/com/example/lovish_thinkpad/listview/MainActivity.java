@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
@@ -14,11 +13,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,13 +32,18 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
     ListView list;
     Button getdata;
+    TextView nme;
     ImageButton paus,play;
     ImageButton prev;
     ImageButton next;
+    ImageButton splay;
+    ImageView imgbg;
+    ImageView smldp;
     MyAdapter adapter;
     int k;
     static int count = 0;
-    boolean mBounded,ab;
+    boolean mBounded;
+    Boolean ab=false;
     boolean flag = false;
     JSONArray android = null;
     String Surl;
@@ -62,13 +69,17 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        list = (ListView) findViewById(R.id.list);
-        getdata = (Button) findViewById(R.id.getdata);
-        paus = (ImageButton)findViewById(R.id.paus);
-        prev=(ImageButton)findViewById(R.id.prev);
-        next=(ImageButton)findViewById(R.id.next);
-        play=(ImageButton)findViewById(R.id.play);
-        getdata.setOnClickListener(new View.OnClickListener() {
+            list = (ListView) findViewById(R.id.list);
+            getdata = (Button) findViewById(R.id.getdata);
+            paus = (ImageButton)findViewById(R.id.paus);
+            prev=(ImageButton)findViewById(R.id.prev);
+            next=(ImageButton)findViewById(R.id.next);
+            play=(ImageButton)findViewById(R.id.play);
+            splay=(ImageButton)findViewById(R.id.btn_hide);
+            imgbg=(ImageView)findViewById(R.id.bgdp);
+            smldp=(ImageView)findViewById(R.id.small_dp);
+            nme =(TextView)findViewById(R.id.name);
+            getdata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new JSONParse().execute();
@@ -82,24 +93,35 @@ public class MainActivity extends AppCompatActivity {
                     e.getClass().getName() + " " + e.getMessage(),
                     Toast.LENGTH_SHORT).show();
         }
-        paus.setOnClickListener(new View.OnClickListener() {
+        splay.setOnClickListener(new View.OnClickListener() {
 
-                public void onClick(View arg0) {
-                    // check for already playing
+            public void onClick(View arg0) {
+                // check for already playing
+                if (!ab) {
+                    paus.setImageResource(R.drawable.ic_play_arrow_white_36dp);
+                    splay.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp);
                     myService.stopMedia();
+                    ab = true;
+                } else {
+                    if (ab) {
+                        paus.setImageResource(R.drawable.ic_pause_white_24dp);
+                        splay.setBackgroundResource(R.drawable.ic_pause_white_24dp);
+                        myService.playMedia();
+                        ab = false;
+                    }
                 }
+
+            }
         });
         play.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 // check for already playing
-                myService.playMedia();
+                //myService.playMedia();
 
             }
         });
-
-
     }
 
     private class JSONParse extends AsyncTask<Void, Void, Void> {
@@ -179,19 +201,22 @@ public class MainActivity extends AppCompatActivity {
                                         int position, long id) {
 
                     HashMap<String, String> info = oslist.get(position);
-                    String title = info.get(STREAM_URL);
+                    String link = info.get(STREAM_URL);
+                    String text = info.get(TAG_NAME);
+                    String icon  = info.get(IMG_URL);
+                    nme.setText(text);
+                    Picasso.with(MainActivity.this)
+                    .load(icon).into(smldp);
+                    Picasso.with(MainActivity.this)
+                            .load(icon.replaceFirst("large","t500x500")).resize(600, 600)
+                            .centerCrop().into(imgbg);
                     ab=false;
-                    Toast.makeText(
-                            MainActivity.this,
-                            "You Clicked at "
-                                    + title,
+                    splay.setBackgroundResource(R.drawable.ic_pause_white_24dp);
+                    Toast.makeText(MainActivity.this, "You Clicked at "+ link,
                             Toast.LENGTH_SHORT).show();
-                    Toast.makeText(
-                            MainActivity.this,
-                            "You Clicked at "
-                                    + position,
+                    Toast.makeText(MainActivity.this, "You Clicked at " + position,
                             Toast.LENGTH_SHORT).show();
-                    mIntent.putExtra("sntAudioLink", title);
+                    mIntent.putExtra("sntAudioLink", link);
                     try {
                         startService(mIntent);
                     } catch (Exception e) {
