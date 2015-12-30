@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     static final String GENRE = "genre";
     private static final String TRACK = "tracks";
     static int x= 0;
+    static String music_type="popular%20music";
     int k;
     ListView list;
     Button getdata;
@@ -171,16 +172,12 @@ public class MainActivity extends AppCompatActivity {
     }
     public void addtospinner(){
         ArrayList<String> list = new ArrayList<String>();
-        list.add("Top News");
-        list.add("Politics");
-        list.add("Business");
-        list.add("Sports");
-        list.add("Movies");
+
 
         ArrayAdapter<CharSequence> adp3= ArrayAdapter.createFromResource(this,
-                R.array.str2, android.R.layout.simple_list_item_1);
+                R.array.str2, R.layout.spinner_item);
 
-        adp3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adp3.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adp3);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -188,12 +185,17 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
                 // TODO Auto-generated method stub
                 String ss = spinner.getSelectedItem().toString();
+                x=0;
+                oslist.clear();
+                music_type = ss;
                 Toast.makeText(getBaseContext(), ss, Toast.LENGTH_SHORT).show();
+                new JSONParse().execute();
 
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
+
                 // TODO Auto-generated method stub
 
             }
@@ -206,8 +208,9 @@ public class MainActivity extends AppCompatActivity {
                 //show sliding layout in bottom of screen (not expand it)
                 //slider.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
                 //btnShow.setVisibility(View.GONE);
-                new JSONParse().execute();
                 x+=10;
+                new JSONParse().execute();
+
             }
         };
     }
@@ -237,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... args) {
-            String url = "https://api-v2.soundcloud.com/explore/popular%20music?limit=10&offset="+x+"&linked_partitioning=1&client_id=994971d344c2db865817b63014907a09";
+            String url = "https://api-v2.soundcloud.com/explore/"+music_type+"?limit=10&offset="+x+"&linked_partitioning=1&client_id=994971d344c2db865817b63014907a09";
 
             String content = JsonParser.getData(url);
             try {

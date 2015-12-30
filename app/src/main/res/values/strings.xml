@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string-array name="str2">
-        <item>Trending Music</item>
+        <item>popular%20music</item>
         <item>Alternative Rock</item>
         <item>Ambient</item>
         <item>Classical</item>
