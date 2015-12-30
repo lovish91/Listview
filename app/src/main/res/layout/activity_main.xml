@@ -3,129 +3,151 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/silver">
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainActivity">
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
         sothree:umanoDragView="@+id/dragView"
         sothree:umanoOverlay="true"
-        sothree:umanoPanelHeight="65dp"
+        sothree:umanoPanelHeight="0dp"
         sothree:umanoParalaxOffset="0dp"
         sothree:umanoShadowHeight="4dp">
-
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:id="@+id/controls">
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Load"
-        android:id="@+id/getdata"
-        android:layout_weight="1"
-        android:layout_alignParentTop="false" />
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="prev"
-        android:layout_weight="1"
-        android:layout_toRightOf="@+id/getdata"
-        android:id="@+id/prev"
-        android:src="@drawable/ic_skip_previous_white_24dp"/>
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="P/P"
-        android:layout_weight="1"
-        android:layout_toRightOf="@+id/prev"
-        android:id="@+id/play"
-        android:src="@drawable/ic_equalizer_white_24dp"/>
+            <android.support.v7.widget.Toolbar
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/my_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:elevation="4dip"
+                style="@style/Widget.Myapp.ActionBar"
+                android:titleTextColor="@color/colorAccent">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="nxt"
-        android:layout_weight="1"
-        android:layout_toRightOf="@+id/paus"
-        android:id="@+id/next"
-        android:src="@drawable/ic_skip_next_white_24dp"/>
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:dropDownVerticalOffset="@dimen/dropDownVerticalOffset"
+                    android:spinnerMode="dropdown"
+                    android:textColor="#FFFFFF"/>
+
+            </android.support.v7.widget.Toolbar>
+
+            <ProgressBar
+                android:id="@+id/prog"
+                style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="10dip"
+                android:layout_below="@+id/my_toolbar"
+                android:layout_marginTop="-7dip"
+                android:indeterminate="true"
+                android:indeterminateTint="#ff0000"
+                android:indeterminateTintMode="src_in"
+                android:visibility="gone" />
 
 
-</LinearLayout>
+            <Button
+                android:id="@+id/getdata"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="false"
+                android:layout_weight="1"
+                android:text="Load"
+                android:visibility="gone" />
 
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/controls"
-        android:divider="@null"
-        android:dividerHeight="-5dip"/>
 
-</RelativeLayout>
+            <ListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/prog"
+                android:divider="@drawable/progressbar"
+                android:dividerHeight="1dip" />
+
+            <android.support.design.widget.FloatingActionButton xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="@dimen/fab_margin_bottom"
+                android:layout_marginRight="@dimen/fab_margin_right"
+                android:src="@drawable/ic_graphic_eq_white_36dp"
+                app:backgroundTint="#FF0000"
+                app:elevation="1dp"
+                app:fabSize="normal"
+                app:rippleColor="#FFF" />
+
+            />
+
+
+        </RelativeLayout>
         <!-- SLIDING LAYOUT -->
         <LinearLayout
             android:id="@+id/dragView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#ffffff"
-            android:clickable="true"
+            android:background="@color/colorAccent"
+            android:clickable="false"
             android:focusable="false"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@color/colorPrimaryDark">
+                android:layout_marginTop="3dp"
+                android:background="@color/silver"
+                android:orientation="horizontal">
+
                 <ImageView
+                    android:id="@+id/small_dp"
                     android:layout_width="65dp"
-                    android:layout_height="65dp"
-                    android:id="@+id/small_dp"/>
+                    android:layout_height="65dp" />
 
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textColor="@android:color/holo_green_dark"
                     android:gravity="center_vertical"
                     android:paddingLeft="10dp"
-                    android:text="HELLO"
+                    android:text=""
+                    android:textColor="@android:color/holo_green_dark"
                     android:textSize="14sp" />
 
                 <ImageButton
                     android:id="@+id/btn_hide"
                     android:layout_width="65dp"
                     android:layout_height="65dp"
+                    android:background="@drawable/ic_play_arrow_white_36dp"
                     android:gravity="right"
-                    android:paddingRight="5dp"
-                    android:background="@drawable/ic_play_arrow_white_36dp" />
+                    android:paddingRight="5dp" />
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/big_bg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorPrimary">
+                android:background="@color/silver">
 
                 <ImageView
+                    android:id="@+id/bgdp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="0dp"
-                    android:id="@+id/bgdp"
-                    />
+                    android:layout_margin="0dp" />
             </LinearLayout>
+
         </LinearLayout>
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
 </RelativeLayout>

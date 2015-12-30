@@ -49,14 +49,16 @@ public class JsonParser {
             return webPage;
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("Fail 1", e.toString());
+            //e.printStackTrace();
             return null;
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e("fail 2", e.toString());
+                    //e.printStackTrace();
                     return null;
                 }
             }

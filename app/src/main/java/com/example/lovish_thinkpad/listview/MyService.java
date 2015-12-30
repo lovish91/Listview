@@ -13,14 +13,12 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener {
 
+    private static final int NOTIFICATION_ID = 1;
     IBinder mbinder = new LocalBinder();
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private String sntAudioLink;
 
-    private static final int NOTIFICATION_ID = 1;
-
-    public void onCreate()
-    {
+    public void onCreate() {
 
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
@@ -65,11 +63,6 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         return mbinder;
-    }
-    public class LocalBinder extends Binder {
-        MyService getService() {
-            return MyService.this;
-        }
     }
 
     @Override
@@ -124,9 +117,15 @@ public class MyService extends Service implements MediaPlayer.OnCompletionListen
         }
     }
 
-    public  void stopMedia() {
+    public void stopMedia() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+        }
+    }
+
+    public class LocalBinder extends Binder {
+        MyService getService() {
+            return MyService.this;
         }
     }
 }

@@ -26,9 +26,7 @@ public class MyAdapter extends BaseAdapter {
     public MyAdapter(Context context, ArrayList<HashMap<String, String>> oslist) {
         this.context = context;
         this.data = oslist;
-
     }
-
     @Override
     public int getCount() {
         return data.size();
@@ -74,10 +72,18 @@ public class MyAdapter extends BaseAdapter {
         HashMap<String, String> resultp = new HashMap<String, String>();
         resultp = data.get(position);
         holder.title.setText(resultp.get(MainActivity.TAG_NAME));
-        holder.genre.setText(resultp.get(MainActivity.TAG_VER));
+        holder.genre.setText(resultp.get(MainActivity.GENRE));
         holder.username.setText(resultp.get(MainActivity.U_NAME));
-        Picasso.with(this.context).load(resultp.get(MainActivity.IMG_URL)).into(holder.img);
 
+        if (MainActivity.ART_URL=="null"){
+            Picasso.with(this.context)
+                    .load(resultp.get(MainActivity.AVATR_URL))
+                    .into(holder.img);
+        }else {
+            Picasso.with(this.context)
+                    .load(resultp.get(MainActivity.ART_URL))
+                    .into(holder.img);
+        }
         return iView;
     }
 }

@@ -4,23 +4,35 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.support.v7.widget.Toolbar;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,205 +42,46 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+    static final String Base_url = "https://api-v2.soundcloud.com/";
+    static final String Client_id ="&client_id=994971d344c2db865817b63014907a09";
+    static final String ART_URL = "artwork_url";
+    static final String AVATR_URL = "avatar_url";
+    static final String TAG_NAME = "title";
+    static final String STREAM_URL = "stream_url";
+    static final String U_NAME = "username";
+    private static final String T_USER = "user";
+    static final String GENRE = "genre";
+    private static final String TRACK = "tracks";
+    static int x= 0;
+    int k;
     ListView list;
     Button getdata;
     TextView nme;
-    ImageButton paus,play;
-    ImageButton prev;
-    ImageButton next;
+    ImageButton paus;
     ImageButton splay;
     ImageView imgbg;
     ImageView smldp;
     MyAdapter adapter;
-    int k;
-    static int count = 0;
+    LinearLayout bigbg;
+    Toolbar myToolbar;
+
     boolean mBounded;
-    Boolean ab=false;
+    Boolean ab = false;
     boolean flag = false;
-    JSONArray android = null;
     String Surl;
     String ver;
     String name;
     String username;
-    String imgurl;
+    static String imgurl;
     Intent mIntent;
+    static String avatar;
+    ProgressBar progressBar;
+    Spinner spinner;
     MyService myService;
-
+    FloatingActionButton fab;
+    SlidingUpPanelLayout slider;
     ArrayList<HashMap<String, String>> oslist = new ArrayList<HashMap<String, String>>();
-    //private static String url = "http://serviceapi.skholingua.com/open-feeds/list_multipletext_json.php";
-    private static String url = "https://api-v2.soundcloud.com/explore/popular%20music?limit=50&offset=0&linked_partitioning=1&client_id=994971d344c2db865817b63014907a09";
-    static final String IMG_URL = "artwork_url";
-    static final String TAG_VER = "genre";
-    static final String TAG_NAME = "title";
-    static final String STREAM_URL = "stream_url";
-    private static final String T_USER = "user";
-    private static final String TRACK = "tracks";
-    static final String U_NAME = "username";
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-            list = (ListView) findViewById(R.id.list);
-            getdata = (Button) findViewById(R.id.getdata);
-            paus = (ImageButton)findViewById(R.id.paus);
-            prev=(ImageButton)findViewById(R.id.prev);
-            next=(ImageButton)findViewById(R.id.next);
-            play=(ImageButton)findViewById(R.id.play);
-            splay=(ImageButton)findViewById(R.id.btn_hide);
-            imgbg=(ImageView)findViewById(R.id.bgdp);
-            smldp=(ImageView)findViewById(R.id.small_dp);
-            nme =(TextView)findViewById(R.id.name);
-            getdata.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new JSONParse().execute();
-            }
-        });
-        try {
-             mIntent = new Intent(this, MyService.class);
-            bindService(mIntent, mConnection, BIND_AUTO_CREATE);
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(),
-                    e.getClass().getName() + " " + e.getMessage(),
-                    Toast.LENGTH_SHORT).show();
-        }
-        splay.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View arg0) {
-                // check for already playing
-                if (!ab) {
-                    paus.setImageResource(R.drawable.ic_play_arrow_white_36dp);
-                    splay.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp);
-                    myService.stopMedia();
-                    ab = true;
-                } else {
-                    if (ab) {
-                        paus.setImageResource(R.drawable.ic_pause_white_24dp);
-                        splay.setBackgroundResource(R.drawable.ic_pause_white_24dp);
-                        myService.playMedia();
-                        ab = false;
-                    }
-                }
-
-            }
-        });
-        play.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                // check for already playing
-                //myService.playMedia();
-
-            }
-        });
-    }
-
-    private class JSONParse extends AsyncTask<Void, Void, Void> {
-        private ProgressDialog pDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Getting Data ...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... args) {
-
-            String content = JsonParser.getData(url);
-            try {
-                flag = true;
-                JSONObject  Json = new JSONObject(content);
-                // Getting JSON Object from URL Content
-                JSONArray json = Json.optJSONArray(TRACK);
-                k = json.length();
-                //JSONArray jsonArray = json.getJSONArray(content);
-                for (int i = 0; i < json.length(); i++) {
-                    JSONObject c = json.getJSONObject(i);
-                    // Storing JSON item in a Variable
-                    name = c.getString(TAG_NAME);
-                    ver = c.getString(TAG_VER);
-                    Surl = c.getString(STREAM_URL);
-                    imgurl = c.getString(IMG_URL);
-
-
-                    JSONObject b = c.getJSONObject(T_USER);
-                    username = b.getString(U_NAME);
-
-
-                    // Adding value HashMap key => value
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    map.put(TAG_VER, ver);
-                    map.put(TAG_NAME, name);
-                    map.put(STREAM_URL, Surl);
-                    map.put(U_NAME, username);
-                    map.put(IMG_URL, imgurl);
-                    //if(count<jsonArray.length())
-                    //{
-                    oslist.add(map);
-                    //}
-                    //count++;
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void args) {
-            // Locate the listview in listview_main.xml
-
-            // Pass the results into ListViewAdapter.java
-            adapter = new MyAdapter(MainActivity.this, oslist);
-            adapter.notifyDataSetChanged();
-            // Set the adapter to the ListView
-            list.setAdapter(adapter);
-            // Close the progressdialog
-
-            pDialog.dismiss();
-            Toast.makeText(
-                    MainActivity.this, "length" + k, Toast.LENGTH_SHORT).show();
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-
-                    HashMap<String, String> info = oslist.get(position);
-                    String link = info.get(STREAM_URL);
-                    String text = info.get(TAG_NAME);
-                    String icon  = info.get(IMG_URL);
-                    nme.setText(text);
-                    Picasso.with(MainActivity.this)
-                    .load(icon).into(smldp);
-                    Picasso.with(MainActivity.this)
-                            .load(icon.replaceFirst("large","t500x500")).resize(600, 600)
-                            .centerCrop().into(imgbg);
-                    ab=false;
-                    splay.setBackgroundResource(R.drawable.ic_pause_white_24dp);
-                    Toast.makeText(MainActivity.this, "You Clicked at "+ link,
-                            Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "You Clicked at " + position,
-                            Toast.LENGTH_SHORT).show();
-                    mIntent.putExtra("sntAudioLink", link);
-                    try {
-                        startService(mIntent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(),
-                                e.getClass().getName() + " " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
-    }
+    ConnectionDetector cd;
     ServiceConnection mConnection = new ServiceConnection() {
 
         public void onServiceDisconnected(ComponentName name) {
@@ -241,18 +94,286 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Toast.makeText(MainActivity.this, "Service is connected", Toast.LENGTH_SHORT).show();
             mBounded = true;
-            MyService.LocalBinder mLocalBinder = (MyService.LocalBinder)service;
+            MyService.LocalBinder mLocalBinder = (MyService.LocalBinder) service;
             myService = mLocalBinder.getService();
         }
     };
+    Boolean isInternetPresent = false;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        list = (ListView) findViewById(R.id.list);
+        getdata = (Button) findViewById(R.id.getdata);
+        //paus = (ImageButton) findViewById(R.id.paus);
+        splay = (ImageButton) findViewById(R.id.btn_hide);
+        imgbg = (ImageView) findViewById(R.id.bgdp);
+        smldp = (ImageView) findViewById(R.id.small_dp);
+        bigbg = (LinearLayout) findViewById(R.id.big_bg);
+        fab =(FloatingActionButton)findViewById(R.id.fab);
+        slider=(SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        progressBar = (ProgressBar)findViewById(R.id.prog);
+        nme = (TextView) findViewById(R.id.name);
+        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        myToolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(myToolbar);
+        addtospinner();
+        //contection checking
+        cd = new ConnectionDetector(getApplicationContext());
+        isInternetPresent = cd.isConnectingToInternet();
+        if (isInternetPresent){
+            getdata.setVisibility(View.INVISIBLE);
+            new JSONParse().execute();
+            //x+=10;
+        }else {
+            getdata.setVisibility(View.INVISIBLE);
 
+        }
+
+        getdata.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    new JSONParse().execute();
+            }
+        });
+        try {
+            mIntent = new Intent(this, MyService.class);
+            bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),
+                    e.getClass().getName() + " " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        }
+        splay.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View arg0) {
+                // check for already playing
+                if (!ab) {
+//                    paus.setImageResource(R.drawable.ic_play_arrow_white_36dp);
+                    splay.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp);
+                    myService.stopMedia();
+                    ab = true;
+                } else {
+                    if (ab) {
+//                        paus.setImageResource(R.drawable.ic_pause_white_24dp);
+                        splay.setBackgroundResource(R.drawable.ic_pause_white_24dp);
+                        myService.playMedia();
+                        ab = false;
+                    }
+                }
+            }
+        });
+        fab.setOnClickListener(onExpand());
+        int color = 0xFF0033CC;
+        progressBar.getIndeterminateDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+
+    }
+    public void addtospinner(){
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("Top News");
+        list.add("Politics");
+        list.add("Business");
+        list.add("Sports");
+        list.add("Movies");
+
+        ArrayAdapter<CharSequence> adp3= ArrayAdapter.createFromResource(this,
+                R.array.str2, android.R.layout.simple_list_item_1);
+
+        adp3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adp3);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+                // TODO Auto-generated method stub
+                String ss = spinner.getSelectedItem().toString();
+                Toast.makeText(getBaseContext(), ss, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+    }
+    private View.OnClickListener onExpand(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //show sliding layout in bottom of screen (not expand it)
+                //slider.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+                //btnShow.setVisibility(View.GONE);
+                new JSONParse().execute();
+                x+=10;
+            }
+        };
+    }
     @Override
     protected void onStop() {
         super.onStop();
-        if(mBounded) {
+        if (mBounded) {
             unbindService(mConnection);
             mBounded = false;
         }
+    }
+
+    private class JSONParse extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MainActivity.this);
+            pDialog.setMessage("Getting Data ...");
+            pDialog.setIndeterminate(true);
+            pDialog.setCancelable(true);
+           // pDialog.show();
+            progressBar.setVisibility(View.VISIBLE);
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... args) {
+            String url = "https://api-v2.soundcloud.com/explore/popular%20music?limit=10&offset="+x+"&linked_partitioning=1&client_id=994971d344c2db865817b63014907a09";
+
+            String content = JsonParser.getData(url);
+            try {
+                flag = true;
+                JSONObject Json = new JSONObject(content);
+                // Getting JSON Object from URL Content
+                JSONArray json = Json.optJSONArray(TRACK);
+                k = json.length();
+                //JSONArray jsonArray = json.getJSONArray(content);
+                for (int i = 0; i < json.length(); i++) {
+                    JSONObject c = json.getJSONObject(i);
+                    // Storing JSON item in a Variable
+                    name = c.getString(TAG_NAME);
+                    ver = c.getString(GENRE);
+                    Surl = c.getString(STREAM_URL);
+                    imgurl = c.getString(ART_URL);
+
+
+                    JSONObject b = c.getJSONObject(T_USER);
+                    username = b.getString(U_NAME);
+                    avatar = b.getString(AVATR_URL);
+
+
+
+                    // Adding value HashMap key => value
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put(GENRE, ver);
+                    map.put(TAG_NAME, name);
+                    map.put(STREAM_URL, Surl);
+                    map.put(U_NAME, username);
+                    map.put(ART_URL, imgurl);
+                    map.put(AVATR_URL, avatar);
+                    //if(count<jsonArray.length())
+                    //{
+                    oslist.add(map);
+                    //}
+                    //count++;
+
+                }
+            } catch (JSONException e) {
+                Log.e("fail 4", e.toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void args) {
+            // Locate the listview in listview_main.xml
+            // Pass the results into ListViewAdapter.java
+            adapter = new MyAdapter(MainActivity.this, oslist);
+            adapter.notifyDataSetChanged();
+            // Set the adapter to the ListView
+            list.setAdapter(adapter);
+            // Close the progressdialog
+
+            //pDialog.dismiss();
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(
+                    MainActivity.this, "length" + k, Toast.LENGTH_SHORT).show();
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    HashMap<String, String> info = oslist.get(position);
+                    String link = info.get(STREAM_URL);
+                    String text = info.get(TAG_NAME);
+                    String icon = info.get(ART_URL);
+                    nme.setText(text);
+                   // Picasso.with(MainActivity.this).load(icon).into(smldp);
+
+                    Picasso.with(MainActivity.this)
+                            .load(icon.replaceFirst("large", "crop"))
+                            .priority(Picasso.Priority.HIGH)
+                            //.centerInside()
+                            .into(new Target() {
+                                @Override
+                                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                    bigbg.setBackground(new BitmapDrawable(bitmap));
+                                }
+
+                                @Override
+                                public void onBitmapFailed(Drawable errorDrawable) {
+                                }
+
+                                @Override
+                                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                                }
+                            });
+
+                    ab = false;
+                    splay.setBackgroundResource(R.drawable.ic_pause_white_24dp);
+                    Toast.makeText(MainActivity.this, "You Clicked at " + icon,
+                            Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(MainActivity.this, "You Clicked at " + position,
+                            Toast.LENGTH_SHORT).show();
+
+                    mIntent.putExtra("sntAudioLink", link);
+                    try
+
+                    {
+                        startService(mIntent);
+                    } catch (
+                            Exception e
+                            )
+
+                    {
+                        e.printStackTrace();
+                        Toast.makeText(getApplicationContext(),
+                                e.getClass().getName() + " " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
 
