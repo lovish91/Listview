@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.http.HttpEntity;
@@ -29,7 +30,7 @@ public class JsonParser {
     public static String getData(String uri) {
 
         BufferedReader reader = null;
-
+        String result = null;
         try {
             URL url = new URL(uri);
             HttpURLConnection con = (HttpURLConnection) url
@@ -46,12 +47,16 @@ public class JsonParser {
             while ((data = reader.readLine()) != null) {
                 webPage += data + "\n";
             }
-            return webPage;
-
-        } catch (Exception e) {
+            result = webPage;
+        } catch (UnsupportedEncodingException e) {
+            Log.e("Fail 1", e.toString());
+        } catch (MalformedURLException e) {
             Log.e("Fail 1", e.toString());
             //e.printStackTrace();
-            return null;
+        } catch (IOException e) {
+            Log.e("Fail 1", e.toString());
+        } catch (Exception e) {
+            Log.e("Fail 1", e.toString());
         } finally {
             if (reader != null) {
                 try {
@@ -59,9 +64,9 @@ public class JsonParser {
                 } catch (IOException e) {
                     Log.e("fail 2", e.toString());
                     //e.printStackTrace();
-                    return null;
                 }
             }
         }
+        return result;
     }
 }

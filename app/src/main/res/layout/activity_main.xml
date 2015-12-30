@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -80,7 +81,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="@dimen/fab_margin_bottom"
                 android:layout_marginRight="@dimen/fab_margin_right"
-                android:src="@drawable/ic_graphic_eq_white_36dp"
                 app:backgroundTint="#FF0000"
                 app:elevation="1dp"
                 app:fabSize="normal"
